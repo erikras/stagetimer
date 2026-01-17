@@ -85,14 +85,18 @@ function App() {
       if (!shell || !measure) return
 
       const availableWidth = shell.clientWidth * 0.8
-      if (availableWidth <= 0) return
+      const availableHeight = shell.clientHeight * 0.8
+      if (availableWidth <= 0 || availableHeight <= 0) return
 
       measure.style.fontSize = '100px'
       measure.textContent = formattedTime
       const measuredWidth = measure.getBoundingClientRect().width
-      if (measuredWidth === 0) return
+      const measuredHeight = measure.getBoundingClientRect().height
+      if (measuredWidth === 0 || measuredHeight === 0) return
 
-      const nextSize = (availableWidth / measuredWidth) * 100
+      const widthScale = availableWidth / measuredWidth
+      const heightScale = availableHeight / measuredHeight
+      const nextSize = Math.min(widthScale, heightScale) * 100
       setFontSize(nextSize)
     }
 
