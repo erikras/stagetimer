@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import './App.css'
 
 const START_MS = Math.floor(10 * 60 * 1000)
 const WARNING_MS = Math.floor(1 * 60 * 1000)
+const MINUTE_MS = 60 * 1000
 
 function formatTime(ms: number, showNegativeSign: boolean) {
   const abs = Math.abs(ms)
@@ -50,7 +51,7 @@ function App() {
     }
   }, [isRunning, baseMs])
 
-  const handleStartPause = () => {
+  const handleStartPause = useCallback(() => {
     if (isRunning) {
       const now = performance.now()
       const elapsed = startTimestampRef.current
@@ -64,14 +65,14 @@ function App() {
 
     startTimestampRef.current = performance.now()
     setIsRunning(true)
-  }
+  }, [isRunning])
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     setIsRunning(false)
     startTimestampRef.current = null
     setBaseMs(START_MS)
     setDisplayMs(START_MS)
-  }
+  }, [])
 
   const startLabel = useMemo(() => (isRunning ? 'Pausar' : 'Iniciar'), [isRunning])
   const formattedTime = useMemo(
@@ -90,6 +91,12 @@ function App() {
       )),
     [formattedTime],
   )
+
+  const adjustMinutes = useCallback((deltaMinutes: number) => {
+    const deltaMs = deltaMinutes * MINUTE_MS
+    setBaseMs((prev) => prev + deltaMs)
+    setDisplayMs((prev) => prev + deltaMs)
+  }, [])
 
   useEffect(() => {
     const recalcSize = () => {
@@ -126,6 +133,28 @@ function App() {
       window.removeEventListener('resize', handleResize)
     }
   }, [formattedTime])
+
+  useEffect(() => {
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.repeat) return
+      if (event.code === 'Space') {
+        event.preventDefault()
+        handleStartPause()
+      } else if (event.key === 'Escape') {
+        event.preventDefault()
+        handleReset()
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault()
+        adjustMinutes(1)
+      } else if (event.key === 'ArrowDown') {
+        event.preventDefault()
+        adjustMinutes(-1)
+      }
+    }
+
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [handleStartPause, handleReset, adjustMinutes])
 
   return (
     <div className={`app ${isOvertime ? 'overtime' : isWarning ? 'warning' : ''}`}>
