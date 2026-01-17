@@ -9,8 +9,9 @@ function formatTime(ms: number, showNegativeSign: boolean) {
   const totalSeconds = Math.floor(abs / 1000)
   const minutes = Math.floor(totalSeconds / 60)
   const seconds = totalSeconds % 60
+  const minutesStr = minutes.toString().padStart(2, '0')
   const sign = showNegativeSign && ms < 0 ? '-' : ''
-  return `${sign}${minutes}:${seconds.toString().padStart(2, '0')}`
+  return `${sign}${minutesStr}:${seconds.toString().padStart(2, '0')}`
 }
 
 function App() {
