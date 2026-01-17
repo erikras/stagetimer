@@ -17,7 +17,10 @@ function App() {
   const [isRunning, setIsRunning] = useState(false)
   const [baseMs, setBaseMs] = useState(START_MS)
   const [displayMs, setDisplayMs] = useState(START_MS)
+  const [fontSize, setFontSize] = useState(120)
   const startTimestampRef = useRef<number | null>(null)
+  const shellRef = useRef<HTMLDivElement | null>(null)
+  const measureRef = useRef<HTMLSpanElement | null>(null)
 
   const isOvertime = displayMs < 0
   const isWarning = displayMs <= WARNING_MS && displayMs >= 0
@@ -75,10 +78,44 @@ function App() {
     [displayMs, isOvertime],
   )
 
+  useEffect(() => {
+    const recalcSize = () => {
+      const shell = shellRef.current
+      const measure = measureRef.current
+      if (!shell || !measure) return
+
+      const availableWidth = shell.clientWidth * 0.8
+      if (availableWidth <= 0) return
+
+      measure.style.fontSize = '100px'
+      measure.textContent = formattedTime
+      const measuredWidth = measure.getBoundingClientRect().width
+      if (measuredWidth === 0) return
+
+      const nextSize = (availableWidth / measuredWidth) * 100
+      setFontSize(nextSize)
+    }
+
+    recalcSize()
+
+    const resizeObserver = new ResizeObserver(recalcSize)
+    if (shellRef.current) {
+      resizeObserver.observe(shellRef.current)
+    }
+
+    const handleResize = () => recalcSize()
+    window.addEventListener('resize', handleResize)
+
+    return () => {
+      resizeObserver.disconnect()
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [formattedTime])
+
   return (
     <div className={`app ${isOvertime ? 'overtime' : isWarning ? 'warning' : ''}`}>
-      <main className="timer-shell">
-        <div className="time" aria-label="timer">
+      <main className="timer-shell" ref={shellRef}>
+        <div className="time" aria-label="timer" style={{ fontSize: `${fontSize}px` }}>
           {formattedTime.split('').map((ch, idx) => (
             <span
               key={`${ch}-${idx}`}
@@ -90,6 +127,9 @@ function App() {
             </span>
           ))}
         </div>
+        <span className="time-measure" ref={measureRef} aria-hidden="true">
+          {formattedTime}
+        </span>
       </main>
       <div className="controls">
         <button className="control-button" onClick={handleStartPause}>
