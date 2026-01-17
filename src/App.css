@@ -1,0 +1,96 @@
+.app {
+  min-height: 100vh;
+  background: #000;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+}
+
+.app.overtime {
+  background: #8a0000;
+}
+
+.app.warning {
+  background: #ffd60a;
+  color: #000;
+}
+
+.app.warning .control-button {
+  border-color: #00000066;
+  background: #f7f7f7;
+  color: #000;
+}
+
+.app.warning .control-button:hover,
+.app.warning .control-button:focus-visible {
+  border-color: #000000aa;
+  background: #e7e7e7;
+  outline: none;
+}
+
+.timer-shell {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.time {
+  font-size: 26rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  line-height: 1;
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 0.05em;
+}
+
+.digit {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 0.7em;
+  text-align: center;
+}
+
+.digit.colon {
+  width: 0.35em;
+}
+
+.digit.minus {
+  width: 0.45em;
+}
+
+.controls {
+  display: flex;
+  gap: 0.5rem;
+  padding: 1rem;
+  justify-content: center;
+}
+
+.control-button {
+  border: 1px solid #ffffff66;
+  background: #1a1a1a;
+  color: #fff;
+  padding: 0.6rem 1.4rem;
+  border-radius: 999px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+.control-button:hover,
+.control-button:focus-visible {
+  border-color: #ffffffaa;
+  background: #2a2a2a;
+  outline: none;
+}
+
+.control-button.secondary {
+  background: transparent;
+}
