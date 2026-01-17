@@ -54,11 +54,14 @@
   position: absolute;
   visibility: hidden;
   pointer-events: none;
+  display: flex;
   white-space: nowrap;
   font-weight: 700;
   letter-spacing: 0.06em;
   font-variant-numeric: tabular-nums;
   line-height: 1;
+  gap: 0.05em;
+  align-items: baseline;
 }
 
 .digit {
